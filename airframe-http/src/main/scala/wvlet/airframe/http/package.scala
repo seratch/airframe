@@ -13,11 +13,15 @@
  */
 package wvlet.airframe
 
-/**
-  *
-  */
 package object http {
 
-  def httpDefaultDesign = newDesign.bind[ControllerProvider].toSingletonOf[ControllerProviderFromSession]
+  /**
+    * Minimum Airframe Design for http module.
+    * @return
+    */
+  def httpDefaultDesign: Design =
+    newDesign
+      .bind[ControllerProvider]
+      .toSingletonOf[ControllerProviderFromSession]
 
 }

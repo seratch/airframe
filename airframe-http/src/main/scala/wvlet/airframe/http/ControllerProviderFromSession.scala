@@ -13,16 +13,25 @@
  */
 package wvlet.airframe.http
 
+import wvlet.log.LogSupport
 import wvlet.surface.Surface
 
-/**
-  * Provides a controller instance corresponding to a given Surface.
-  */
-trait ControllerProvider {
+import scala.util.{Failure, Success, Try}
+import wvlet.airframe._
 
-  /**
-    * Returns a controller instance as an Option value.
-    * The extracted controller method will be invoked in Route#call later.
-    */
-  def findController(controllerSurface: Surface): Option[Any]
+/**
+  * A ControllerProvider implementation which holds airframe Session.
+  */
+trait ControllerProviderFromSession extends ControllerProvider with LogSupport {
+  private val session = bind[Session]
+
+  override def findController(controllerSurface: Surface): Option[Any] = {
+    Try(session.getInstanceOf(controllerSurface)) match {
+      case Success(controller) =>
+        Some(controller)
+      case Failure(e) =>
+        warn(e)
+        None
+    }
+  }
 }

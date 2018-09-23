@@ -13,13 +13,11 @@
  */
 package wvlet.airframe.http.finagle
 
-import com.twitter.finagle.http.{Request, Response, Status}
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.util.Future
-import wvlet.airframe.codec.{JSONCodec, MessageCodec}
 import wvlet.airframe.http.{ControllerProvider, ResponseHandler, Router}
 import wvlet.log.LogSupport
-import wvlet.surface.Surface
 
 /**
   * A filter for dispatching http requests to the predefined routes with Finagle
@@ -50,7 +48,7 @@ class FinagleRouter(router: Router,
                   // If X is Response type, return as is
                   case vc if classOf[Response].isAssignableFrom(vc) =>
                     result.asInstanceOf[Future[Response]]
-                  case other =>
+                  case _ =>
                     // If X is other type, convert X into an HttpResponse
                     result.asInstanceOf[Future[_]].map { r =>
                       responseHandler.toHttpResponse(request, futureValueSurface, r)
@@ -66,49 +64,6 @@ class FinagleRouter(router: Router,
       case None =>
         // No route is found
         service(request)
-    }
-  }
-}
-
-/**
-  * Converting controller results into finagle http responses.
-  */
-trait FinagleResponseHandler extends ResponseHandler[Request, Response] {
-
-  // Use Map codecs to create natural JSON responses
-  private[this] val mapCodecFactory =
-    MessageCodec.defautlFactory.withObjectMapCodec
-
-  def toHttpResponse[A](request: Request, responseSurface: Surface, a: A): Response = {
-    a match {
-      case r: Response =>
-        // Return the response as is
-        r
-      case s: String =>
-        val r = Response()
-        r.contentString = s
-        r
-      case _ =>
-        // Convert the response object into JSON
-        val rs = mapCodecFactory.of(responseSurface)
-        val bytes: Array[Byte] = rs match {
-          case m: MessageCodec[_] =>
-            m.asInstanceOf[MessageCodec[A]].toMsgPack(a)
-          case _ =>
-            throw new IllegalArgumentException(s"Unknown codec: ${rs}")
-        }
-
-        // TODO return application/msgpack content type
-        val json = JSONCodec.unpackMsgPack(bytes)
-        json match {
-          case Some(j) =>
-            val res = Response(Status.Ok)
-            res.setContentTypeJson()
-            res.setContentString(json.get)
-            res
-          case None =>
-            Response(Status.InternalServerError)
-        }
     }
   }
 }

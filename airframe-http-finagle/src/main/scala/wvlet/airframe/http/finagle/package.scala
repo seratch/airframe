@@ -14,6 +14,7 @@
 package wvlet.airframe.http
 
 import com.twitter.finagle.http
+import com.twitter.finagle.http.Request
 import wvlet.airframe.Design
 import wvlet.airframe.http.finagle.FinagleServer.FinagleService
 
@@ -24,11 +25,12 @@ package object finagle {
 
   private def finagleBaseDesign: Design =
     httpDefaultDesign
-      .bind[ResponseHandler[http.Request, http.Response]].to[FinagleResponseHandler]
+      .bind[ResponseHandler[http.Request, http.Response]]
+      .to[FinagleResponseHandler]
 
   def finagleDefaultDesign: Design =
     finagleBaseDesign
-    // Add a default router so that we can instantiate FinagleRouter even when users speicfy no Router
+    // Add a default router so that we can instantiate FinagleRouter even when users specify no Router
       .bind[Router].toInstance(Router.empty)
       .bind[FinagleService].toProvider { router: FinagleRouter =>
         FinagleServer.defaultService(router)
@@ -36,7 +38,7 @@ package object finagle {
 
   implicit class FinagleHttpRequest(val raw: http.Request) extends HttpRequest[http.Request] {
     def asAirframeHttpRequest: HttpRequest[http.Request] = this
-    override def toRaw                                   = raw
+    override def toRaw: Request                          = raw
     override def method: HttpMethod                      = toHttpMethod(raw.method)
     override def path: String                            = raw.path
     override def query: Map[String, String]              = raw.params
@@ -55,7 +57,7 @@ package object finagle {
       case http.Method.Post   => HttpMethod.POST
       case http.Method.Put    => HttpMethod.PUT
       case http.Method.Delete => HttpMethod.DELETE
-      case other              => throw new IllegalArgumentException(s"Unsupporeted method: ${method}")
+      case _                  => throw new IllegalArgumentException(s"Unsupported method: ${method}")
     }
   }
 }

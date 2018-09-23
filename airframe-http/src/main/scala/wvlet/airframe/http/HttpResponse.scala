@@ -11,18 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package wvlet.airframe.http
-
-import wvlet.surface.Surface
+//package wvlet.airframe.http
 
 /**
-  * Provides a controller instance corresponding to a given Surface.
+  * HTTP response abstraction in airframe-http.
+  * TODO: unused as of version 0.66
   */
-trait ControllerProvider {
-
-  /**
-    * Returns a controller instance as an Option value.
-    * The extracted controller method will be invoked in Route#call later.
-    */
-  def findController(controllerSurface: Surface): Option[Any]
-}
+//trait HttpResponse {}

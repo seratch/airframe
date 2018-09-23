@@ -15,27 +15,18 @@ package wvlet.airframe.http
 
 import java.nio.charset.StandardCharsets
 
-trait HttpRequest[Req] {
-  def method: HttpMethod
-  def path: String
-  def query: Map[String, String]
-  def contentString: String
-  def contentBytes: Array[Byte]
-  lazy val pathComponents: IndexedSeq[String] = {
-    path.replaceFirst("/", "").split("/").toIndexedSeq
-  }
-  def toRaw: Req
-}
-
+/**
+  * A simple implementation of HttpRequest which supports only text body requests.
+  *
+  * TODO: maybe more appropriate name would be TextBodyHttpRequest?
+  */
 case class SimpleHttpRequest(method: HttpMethod,
                              path: String,
                              query: Map[String, String] = Map.empty,
                              contentString: String = "")
     extends HttpRequest[SimpleHttpRequest] {
-  override def contentBytes: Array[Byte] = {
-    contentString.getBytes(StandardCharsets.UTF_8)
-  }
-  override def toRaw: SimpleHttpRequest = this
-}
 
-trait HttpResponse {}
+  override def contentBytes: Array[Byte] = contentString.getBytes(StandardCharsets.UTF_8)
+  override def toRaw: SimpleHttpRequest = this
+
+}

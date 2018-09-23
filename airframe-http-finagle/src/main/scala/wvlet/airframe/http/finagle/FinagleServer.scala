@@ -12,16 +12,13 @@
  * limitations under the License.
  */
 package wvlet.airframe.http.finagle
+
 import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finagle.{Http, ListeningServer, Service, SimpleFilter}
 import com.twitter.util.{Await, Future}
 import javax.annotation.{PostConstruct, PreDestroy}
-import wvlet.airframe.http.{ControllerProvider, ResponseHandler, Route, Router}
 import wvlet.airframe.http.finagle.FinagleServer.FinagleService
 import wvlet.log.LogSupport
-import wvlet.airframe._
-
-case class FinagleServerConfig(port: Int)
 
 /**
   *
@@ -61,8 +58,8 @@ object FinagleServer extends LogSupport {
   /**
     * A simple error handler for wrapping exceptions as InternalServerError (500)
     */
-  def defaultErrorHandler = new SimpleFilter[Request, Response] {
-    override def apply(request: Request, service: Service[Request, Response]): Future[Response] = {
+  def defaultErrorHandler: SimpleFilter[Request, Response] =
+    (request: Request, service: Service[Request, Response]) => {
       service(request).rescue {
         case e: Throwable =>
           logger.warn(e.getMessage)
@@ -70,42 +67,23 @@ object FinagleServer extends LogSupport {
           Future.value(Response(Status.InternalServerError))
       }
     }
-  }
 
   /**
     * Simple logger for logging http requests and responses to stderr
     */
-  def defaultRequestLogger = new SimpleFilter[Request, Response] {
-    override def apply(request: Request, service: Service[Request, Response]): Future[Response] = {
+  def defaultRequestLogger: SimpleFilter[Request, Response] =
+    (request: Request, service: Service[Request, Response]) => {
       logger.trace(request)
       service(request).map { response =>
         logger.trace(response)
         response
       }
     }
-  }
 
   /**
     * A fallback service if FinagleRouter cannot find any matching endpoint
     */
-  def notFound: Service[Request, Response] = new Service[Request, Response] {
-    override def apply(request: Request): Future[Response] = {
-      Future.value(Response(Status.NotFound))
-    }
-  }
-}
-
-trait FinagleServerFactory {
-  private val controllerProvider = bind[ControllerProvider]
-  private val responseHandler    = bind[ResponseHandler[Request, Response]]
-
-  /**
-    * Override this method to customize finagle service filters
-    */
-  protected def newService(finagleRouter: FinagleRouter) = FinagleServer.defaultService(finagleRouter)
-
-  def newFinagleServer(port: Int, router: Router): FinagleServer = {
-    val finagleRouter = new FinagleRouter(router, controllerProvider, responseHandler)
-    new FinagleServer(finagleConfig = FinagleServerConfig(port = port), finagleService = newService(finagleRouter))
+  def notFound: Service[Request, Response] = (_: Request) => {
+    Future.value(Response(Status.NotFound))
   }
 }

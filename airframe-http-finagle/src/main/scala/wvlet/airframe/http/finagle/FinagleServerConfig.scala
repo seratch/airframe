@@ -11,13 +11,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package wvlet.airframe.http.finagle
 
-package wvlet.airframe.http;
-
-public enum HttpMethod
-{
-    GET,
-    POST,
-    DELETE,
-    PUT;
-}
+case class FinagleServerConfig(port: Int)

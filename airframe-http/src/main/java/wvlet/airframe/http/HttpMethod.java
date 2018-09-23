@@ -11,25 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package wvlet.airframe.http;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-@Retention(RUNTIME)
-@Target({METHOD, TYPE})
-public @interface Endpoint
+public enum HttpMethod
 {
-    /**
-     * Uri beginning from / (slash)
-     * @return
-     */
-    String path();
-    HttpMethod method() default HttpMethod.GET;
-    String description() default "";
+    GET,
+    POST,
+    DELETE,
+    PUT
 }
