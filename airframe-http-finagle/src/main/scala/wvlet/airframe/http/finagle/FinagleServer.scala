@@ -16,7 +16,7 @@ import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finagle.{Http, ListeningServer, Service, SimpleFilter}
 import com.twitter.util.{Await, Future}
 import javax.annotation.{PostConstruct, PreDestroy}
-import wvlet.airframe.http.{ControllerProvider, ResponseHandler, Route, Router}
+import wvlet.airframe.http.{ControllerProvider, ResponseHandler, Router}
 import wvlet.airframe.http.finagle.FinagleServer.FinagleService
 import wvlet.log.LogSupport
 import wvlet.airframe._
@@ -27,6 +27,7 @@ case class FinagleServerConfig(port: Int)
   *
   */
 class FinagleServer(finagleConfig: FinagleServerConfig, finagleService: FinagleService) extends LogSupport {
+
   protected[this] var server: Option[ListeningServer] = None
 
   def port: Int = finagleConfig.port
@@ -102,7 +103,7 @@ trait FinagleServerFactory {
   /**
     * Override this method to customize finagle service filters
     */
-  protected def newService(finagleRouter: FinagleRouter) = FinagleServer.defaultService(finagleRouter)
+  protected def newService(finagleRouter: FinagleRouter): FinagleService = FinagleServer.defaultService(finagleRouter)
 
   def newFinagleServer(port: Int, router: Router): FinagleServer = {
     val finagleRouter = new FinagleRouter(router, controllerProvider, responseHandler)

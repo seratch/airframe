@@ -34,28 +34,28 @@ package object finagle {
         FinagleServer.defaultService(router)
       }
 
-  implicit class FinagleHttpRequest(val raw: http.Request) extends HttpRequest[http.Request] {
-    def asAirframeHttpRequest: HttpRequest[http.Request] = this
-    override def toRaw                                   = raw
-    override def method: HttpMethod                      = toHttpMethod(raw.method)
-    override def path: String                            = raw.path
-    override def query: Map[String, String]              = raw.params
-    override def contentString: String                   = raw.contentString
+  implicit class FinagleAirframeRequest(override val raw: http.Request) extends AirframeRequest[http.Request] {
+    override def method: HttpMethod         = toAirframeHttpMethod(raw.method)
+    override def path: String               = raw.path
+    override def query: Map[String, String] = raw.params
+    override def contentString: String      = raw.contentString
     override def contentBytes: Array[Byte] = {
       val size = raw.content.length
       val b    = new Array[Byte](size)
       raw.content.write(b, 0)
       b
     }
+
+    def asAirframeHttpRequest: AirframeRequest[http.Request] = this
   }
 
-  private[finagle] def toHttpMethod(method: http.Method): HttpMethod = {
+  private[finagle] def toAirframeHttpMethod(method: http.Method): HttpMethod = {
     method match {
       case http.Method.Get    => HttpMethod.GET
       case http.Method.Post   => HttpMethod.POST
       case http.Method.Put    => HttpMethod.PUT
       case http.Method.Delete => HttpMethod.DELETE
-      case other              => throw new IllegalArgumentException(s"Unsupported method: ${method}")
+      case _                  => throw new IllegalArgumentException(s"Unsupported method: ${method}")
     }
   }
 }

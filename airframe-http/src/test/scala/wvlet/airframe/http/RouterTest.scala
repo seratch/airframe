@@ -16,6 +16,7 @@ package wvlet.airframe.http
 import wvlet.airframe.AirframeSpec
 import wvlet.surface
 import wvlet.surface.Surface
+import TestHelper.buildTextBodyRequest
 
 /**
   *
@@ -58,22 +59,22 @@ class RouterTest extends AirframeSpec {
     "find target method" in {
       val router = Router.of[ControllerExample]
 
-      val r = router.findRoute(SimpleHttpRequest(HttpMethod.GET, "/user/1"))
+      val r = router.findRoute(buildTextBodyRequest(HttpMethod.GET, "/user/1"))
       debug(r)
       r shouldBe defined
       r.get.method shouldBe HttpMethod.GET
 
-      val r2 = router.findRoute(SimpleHttpRequest(HttpMethod.POST, "/user"))
+      val r2 = router.findRoute(buildTextBodyRequest(HttpMethod.POST, "/user"))
       debug(r2)
       r2 shouldBe defined
       r2.get.method shouldBe HttpMethod.POST
 
-      val r3 = router.findRoute(SimpleHttpRequest(HttpMethod.PUT, "/user/2"))
+      val r3 = router.findRoute(buildTextBodyRequest(HttpMethod.PUT, "/user/2"))
       debug(r3)
       r3 shouldBe defined
       r3.get.method shouldBe HttpMethod.PUT
 
-      val r4 = router.findRoute(SimpleHttpRequest(HttpMethod.DELETE, "/user/3"))
+      val r4 = router.findRoute(buildTextBodyRequest(HttpMethod.DELETE, "/user/3"))
       debug(r4)
       r4 shouldBe defined
       r4.get.method shouldBe HttpMethod.DELETE
@@ -94,7 +95,7 @@ class RouterTest extends AirframeSpec {
       }
 
       {
-        val req = SimpleHttpRequest(HttpMethod.GET, "/user/10")
+        val req = buildTextBodyRequest(HttpMethod.GET, "/user/10")
         val ret =
           router
             .findRoute(req)
@@ -104,7 +105,7 @@ class RouterTest extends AirframeSpec {
       }
 
       {
-        val req2 = SimpleHttpRequest(HttpMethod.PUT, "/user/2", contentString = "hello")
+        val req2 = buildTextBodyRequest(HttpMethod.PUT, "/user/2", contentString = "hello")
         val ret2 =
           router
             .findRoute(req2)
@@ -114,7 +115,7 @@ class RouterTest extends AirframeSpec {
       }
 
       {
-        val req = SimpleHttpRequest(HttpMethod.POST, "/user", contentString = """{"name":"aina"}""")
+        val req = buildTextBodyRequest(HttpMethod.POST, "/user", contentString = """{"name":"aina"}""")
         val ret =
           router
             .findRoute(req)

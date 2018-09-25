@@ -16,6 +16,7 @@ package wvlet.airframe.http.finagle
 import java.nio.charset.StandardCharsets
 
 import com.twitter.finagle.http
+import com.twitter.finagle.http.Request
 import wvlet.airframe.AirframeSpec
 
 /**
@@ -24,19 +25,18 @@ import wvlet.airframe.AirframeSpec
 class FinagleTest extends AirframeSpec {
   "airframe-finagle package" should {
     "provide facade of http requests" in {
-      import wvlet.airframe.http.finagle._
 
       Seq(http.Method.Get, http.Method.Post, http.Method.Delete, http.Method.Put)
         .foreach { m =>
-          val req = http.Request(m, "/hello")
+          val req: Request = http.Request(m, "/hello")
           req.setContentString("hello finagle")
           val r = req.asAirframeHttpRequest
-          r.method shouldBe toHttpMethod(m)
+          r.method shouldBe toAirframeHttpMethod(m)
           r.path shouldBe "/hello"
           r.query shouldBe Map.empty
           r.contentString shouldBe "hello finagle"
           r.contentBytes shouldBe "hello finagle".getBytes(StandardCharsets.UTF_8)
-          r.toRaw shouldBe req
+          r.raw shouldBe req
         }
     }
   }

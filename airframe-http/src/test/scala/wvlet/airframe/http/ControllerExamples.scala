@@ -22,9 +22,6 @@ object ControllerExample {
   case class CreateUserRequest(name: String)
 }
 
-/**
-  *
-  */
 trait ControllerExample extends LogSupport {
   import ControllerExample._
 
@@ -50,7 +47,7 @@ trait ControllerExample extends LogSupport {
   }
 
   @Endpoint(path = "/user/:id", method = HttpMethod.PUT)
-  def updateUser(id: String, httpRequest: HttpRequest[_]): String = {
+  def updateUser(id: String, httpRequest: AirframeRequest[_]): String = {
     info(s"id: ${id}, ${httpRequest.contentString}")
     httpRequest.contentString
   }

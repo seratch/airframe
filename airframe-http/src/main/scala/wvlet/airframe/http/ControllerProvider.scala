@@ -20,14 +20,18 @@ import scala.util.{Failure, Success, Try}
 import wvlet.airframe._
 
 /**
-  *
+  * Returns the available controller instance from the given Surface information.
   */
 trait ControllerProvider {
+
+  /**
+    * Returns the actual controller instance if exists.
+    */
   def findController(controllerSurface: Surface): Option[Any]
 }
 
 trait ControllerProviderFromSession extends ControllerProvider with LogSupport {
-  private val session = bind[Session]
+  private[this] val session = bind[Session]
 
   override def findController(controllerSurface: Surface): Option[Any] = {
     Try(session.getInstanceOf(controllerSurface)) match {
@@ -38,8 +42,4 @@ trait ControllerProviderFromSession extends ControllerProvider with LogSupport {
         None
     }
   }
-}
-
-trait ResponseHandler[Req, Res] {
-  def toHttpResponse[A](request: Req, responseTypeSurface: Surface, a: A): Res
 }

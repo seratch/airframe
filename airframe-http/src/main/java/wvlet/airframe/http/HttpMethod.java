@@ -16,8 +16,10 @@ package wvlet.airframe.http;
 
 public enum HttpMethod
 {
+    // TODO: PATCH?
+
     GET,
     POST,
     DELETE,
-    PUT;
+    PUT
 }

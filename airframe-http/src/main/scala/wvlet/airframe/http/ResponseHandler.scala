@@ -11,25 +11,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package wvlet.airframe.http
 
-package wvlet.airframe.http;
+import wvlet.surface.Surface
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+/**
+  * Handles the conversion of the response value to actual HTTP response.
+  */
+trait ResponseHandler[RawReq, RawResp] {
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-@Retention(RUNTIME)
-@Target({METHOD, TYPE})
-public @interface Endpoint
-{
-    /**
-     * Uri beginning from / (slash)
-     * @return
-     */
-    String path();
-    HttpMethod method() default HttpMethod.GET;
-    String description() default "";
+  /**
+    * Converts the result value to actual HTTP response.
+    */
+  def toHttpResponse[RespValue](request: RawReq, responseTypeSurface: Surface, response: RespValue): RawResp
 }
