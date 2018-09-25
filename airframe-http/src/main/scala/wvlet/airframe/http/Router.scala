@@ -14,7 +14,7 @@
 package wvlet.airframe.http
 
 import wvlet.airframe.codec.PrimitiveCodec.StringCodec
-import wvlet.airframe.codec.{JSONCodec, MessageCodec}
+import wvlet.airframe.codec.{JSONCodec, MessageCodec, ParamListCodec}
 import wvlet.log.LogSupport
 import wvlet.surface
 import wvlet.surface.{Surface, Zero}

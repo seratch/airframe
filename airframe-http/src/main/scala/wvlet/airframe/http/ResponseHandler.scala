@@ -13,6 +13,7 @@
  */
 package wvlet.airframe.http
 
+import wvlet.airframe.codec.{MessageCodec, MessageCodecFactory}
 import wvlet.surface.Surface
 
 /**
@@ -20,8 +21,13 @@ import wvlet.surface.Surface
   */
 trait ResponseHandler[RawReq, RawResp] {
 
+  // Use Map codecs to create natural JSON responses
+  protected[this] val mapCodecFactory: MessageCodecFactory =
+    MessageCodec.defaultFactory.withObjectMapCodec
+
   /**
     * Converts the result value to actual HTTP response.
     */
   def toHttpResponse[RespValue](request: RawReq, responseTypeSurface: Surface, response: RespValue): RawResp
+
 }

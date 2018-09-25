@@ -551,6 +551,24 @@ lazy val finagle =
     )
     .dependsOn(http, airframeMacrosJVM % "compile-internal,test-internal", airframeSpecJVM % "test")
 
+val JETTY_VERSION = "9.4.12.v20180830"
+lazy val jetty =
+  project
+    .in(file("airframe-http-jetty"))
+    .settings(buildSettings)
+    .settings(
+      name := "airframe-http-jetty",
+      description := "REST API binding for Jetty Servlets",
+      libraryDependencies ++= Seq(
+        "javax.servlet"        %  "javax.servlet-api" % "3.1.0"       % Compile,
+        "org.eclipse.jetty"    %  "jetty-webapp"      % JETTY_VERSION % Compile,
+        "org.eclipse.jetty"    %  "jetty-servlet"     % JETTY_VERSION % Compile,
+        "org.eclipse.jetty"    %  "jetty-server"      % JETTY_VERSION % Compile,
+        "com.squareup.okhttp3" %  "okhttp"            % "3.11.0"      % Test
+      )
+    )
+    .dependsOn(http, airframeMacrosJVM % "compile-internal,test-internal", airframeSpecJVM % "test")
+
 lazy val json =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
