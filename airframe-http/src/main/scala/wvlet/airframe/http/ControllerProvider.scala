@@ -18,6 +18,7 @@ import wvlet.surface.Surface
 
 import scala.util.{Failure, Success, Try}
 import wvlet.airframe._
+import wvlet.airframe.codec.MessageCodec
 
 /**
   *
@@ -41,5 +42,11 @@ trait ControllerProviderFromSession extends ControllerProvider with LogSupport {
 }
 
 trait ResponseHandler[Req, Res] {
+
+  // Use Map codecs to create natural JSON responses
+  protected[this] val mapCodecFactory =
+    MessageCodec.defaultFactory.withObjectMapCodec
+
   def toHttpResponse[A](request: Req, responseTypeSurface: Surface, a: A): Res
+
 }

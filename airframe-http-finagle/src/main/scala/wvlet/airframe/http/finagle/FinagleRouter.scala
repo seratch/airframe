@@ -75,10 +75,6 @@ class FinagleRouter(router: Router,
   */
 trait FinagleResponseHandler extends ResponseHandler[Request, Response] {
 
-  // Use Map codecs to create natural JSON responses
-  private[this] val mapCodecFactory =
-    MessageCodec.defaultFactory.withObjectMapCodec
-
   def toHttpResponse[A](request: Request, responseSurface: Surface, a: A): Response = {
     a match {
       case r: Response =>
